@@ -25,8 +25,6 @@ def kruskal(adjacency_list_sorted):
 
                color_nodes[colors] = [edge[0], edge[1]]
 
-#             print(color_nodes)
-
                colors += 1
         # If precisely 1 endpoint is colored, give the other one and e the same color.
           elif edge[0] not in nodes_color and edge[1] in nodes_color:
@@ -34,14 +32,10 @@ def kruskal(adjacency_list_sorted):
 
                color_nodes[nodes_color[edge[1]]].append(edge[0])
 
-#             print(color_nodes)
-
           elif edge[0] in nodes_color and edge[1] not in nodes_color:
                nodes_color[edge[1]] = nodes_color[edge[0]]
 
                color_nodes[nodes_color[edge[0]]].append(edge[1])
-
-#             print(color_nodes)
 
           # If both endpoints are colored
           elif edge[0] in nodes_color and edge[1] in nodes_color:
@@ -63,28 +57,19 @@ def kruskal(adjacency_list_sorted):
                          for n in deleted_color_nodes:
                               nodes_color[n] = nodes_color[edge[0]]
 
-     #                     print("delete", nodes_color[edge[1]], color_nodes[nodes_color[edge[1]]],\
-     #                          nodes_color[edge[0]], color_nodes[nodes_color[edge[0]]])
-
                     else:
                          # change the color of small tree to the color of larger tree
                          color_nodes[nodes_color[edge[1]]] = \
                          color_nodes[nodes_color[edge[1]]] + color_nodes[nodes_color[edge[0]]]
 
-     #                     print("delete", nodes_color[edge[0]], color_nodes[nodes_color[edge[0]]],\
-     #                          nodes_color[edge[1]], color_nodes[nodes_color[edge[1]]])
-
                          deleted_color_nodes = color_nodes.pop(nodes_color[edge[0]], None)
 
                          for n in deleted_color_nodes:
-     #                        print(n, edge[1], nodes_color)
                               nodes_color[n] = nodes_color[edge[1]]
 
-     #                     print('after delete', color_nodes, nodes_color)
-
-        # aftered colored two nodes, add their edge to MST
+          # aftered colored two nodes, add their edge to MST
           colored_edges.append(edge)
-#     print(colored_edges)
+
      return colored_edges
 
 
@@ -260,6 +245,7 @@ def tsp(points):
      # [[0, 1.4142135623730951], [1.4142135623730951, 0]]
      # print(odd_nodes_admatrix)
      
+     ######## use networkx algorithm for perfect matching
      G = nx.Graph()
 
      G.add_nodes_from(range(ston_len))
@@ -280,9 +266,13 @@ def tsp(points):
      # calculate a perfect mathing with the nodes of odd degree in spanning tree
      # perfect_matching = find_minimum_weight_matching(odd_nodes_admatrix)
 
+     ######## use networkx algorithm for perfect matching
 
-# todo, review from here
+
+     # `perfect_matching` contains points index which is index of spanning_tree_odd_nodes
+     # transfer posints_index back to points in euclidean plane
      perfect_matching_points = []
+
      # find_minimum_weight_matching return a list of index of points, 
      # here we convert index back to points
      for edge in list(perfect_matching):
@@ -293,11 +283,9 @@ def tsp(points):
           else:
                perfect_matching_points.append((p2, p1))
 
-     # print(perfect_matching_points)
-
-     # return perfect_matching_points
-
+     # `perfect_matching_points` is a list of tuples, [(point0, point1), ....], point is a tuple of coordinates
      # print('perfect_matching', perfect_matching_points)
+
      # compute the union of perfect matching and spanning tree
      union_spanning_tree_matching = []
      # convert the points to index
@@ -320,22 +308,32 @@ def tsp(points):
           else:
                union_spanning_tree_matching.append((pi2, pi1))
 
-     # the points given [(1,1), (3,1), (2,2), (3,2), (4,2), (2,3), (3,3), (2,4)]
+     # `union_spanning_tree_matching` is a list of tuple,
+     # tuples are two points index, represent an edge
      # print('union_spanning_tree_matching', union_spanning_tree_matching)
 
      # compute a eulerian cycle on the union, there must be one, since all nodes have even degree
      eulerian_cycle = hierholzer(union_spanning_tree_matching)
-
+     # a list of point index, may contain duplicate index
      # print('eulerian_cycle', eulerian_cycle)
 
+     start_index = eulerian_cycle.index(1)
+
      hamiltonian_cycle = []
-     # remove repeasted nodes
-     for node in eulerian_cycle:
+     # remove repeated nodes, we start from node 1
+     for node in eulerian_cycle[start_index:] + eulerian_cycle[:start_index]:
           if node not in hamiltonian_cycle:
                hamiltonian_cycle.append(node)
 
      # make it a cycle
      hamiltonian_cycle.append(hamiltonian_cycle[0])
-     print('hamiltonian_cycle', hamiltonian_cycle)
+     # print('hamiltonian_cycle', hamiltonian_cycle)
      
      return hamiltonian_cycle
+
+def main(input):
+    output = solve_tsp(input)
+    return output
+
+if __name__ == '__main__':
+    main(input)
