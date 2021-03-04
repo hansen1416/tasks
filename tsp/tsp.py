@@ -1,3 +1,5 @@
+import networkx as nx
+
 def distance(p, q):
     """Return the Euclidean distance between points p = (a, b) and q = (c, d)."""
     return ((p[0]-q[0])**2 + (p[1]-q[1])**2) ** 0.5
@@ -170,28 +172,33 @@ def tsp(points):
      n = points[0]
      adjacency_list = {}
 
-     for i in range(1, n):
-          for j in range(i+1, n):
+     for i in range(1, n+1):
+          for j in range(i+1, n+1):
                # if these two points are not equal
                if points[i] != points[j]:
                     # compare x-axis first, put point with samller x-axis at first position
                     # if x-axis are equal, compare y-axis
                     if points[i][0] < points[j][0] or (points[i][0] == points[j][0] and points[i][1] < points[j][1]):
-                         adjacency_list[(points[i], points[j])] = distance(
-                         points[i], points[j])
+                         adjacency_list[(points[i], points[j])] = distance(points[i], points[j])
                     else:
-                         adjacency_list[(points[j], points[i])] = distance(
-                         points[i], points[j])
+                         adjacency_list[(points[j], points[i])] = distance(points[i], points[j])
 
+     # adjacency_list is a dict like {(points0, points1): distance} 
+     # {((0, 0), (1, 1)): 1.4142135623730951, ((0, 0), (0, 1)): 1.0, ((0, 1), (1, 1)): 1.0}
      # print(adjacency_list)#, len(adjacency_list), adjacency_list.keys())
-     # sort
+
+     # sort `adjacency_list` by distances, so we can run kruskal algorithm on it 
      adjacency_list_sorted = {k: v for k, v in sorted(adjacency_list.items(), key=lambda item: item[1])}
+
      # we don't need the unsorted dict anymore
      del adjacency_list
      # print('adjacency_list_sorted', adjacency_list_sorted)
 
      # compute minimal weight spanning tree 
      spanning_tree = kruskal(adjacency_list_sorted)
+     
+     # spanning_tree is a list of tuples, tuple represent an edge connect two points,  [(points0, points1), ....]
+     # [((0, 0), (0, 1)), ((0, 1), (1, 1))]
      # print('spanning_tree', spanning_tree)
 
      points_degree = {}
@@ -205,6 +212,10 @@ def tsp(points):
 
           points_degree[edge[0]] += 1
           points_degree[edge[1]] += 1
+
+     # points_degree is a dict of {points: degree, }
+     # the degree of points in the spanning tree
+     # print(points_degree)
      
      spanning_tree_odd_nodes = []
      ind = 0
@@ -217,11 +228,20 @@ def tsp(points):
 
      del points_degree
 
+     # spanning_tree_odd_nodes is a list of tuples (points) [points0, points1, ...]
+     # [(0, 0), (1, 1)]
      # print('spanning_tree_odd_nodes', spanning_tree_odd_nodes)
-
+     
+     # length of odd degree nodes in spanning tree 
      ston_len = len(spanning_tree_odd_nodes)
-     # build a adjacency matrix with the nodes of odd degree in spanning tree 
+     # build a adjacency matrix with the nodes of odd degree in spanning tree
      odd_nodes_admatrix = [[0 for _ in range(ston_len)] for _ in range(ston_len)]
+
+     # odd_nodes_admatrix is a adjacency matrix, initial it with 0 2-d array
+     # 2-d array, contains distances (edge weights) between points.
+     # print(odd_nodes_admatrix)
+
+     edge_max_weight = 0
 
      for i1, p1 in enumerate(spanning_tree_odd_nodes):
           for i2, p2 in enumerate(spanning_tree_odd_nodes):
@@ -231,20 +251,51 @@ def tsp(points):
                          odd_nodes_admatrix[i1][i2] = adjacency_list_sorted[(p1, p2)]
                          odd_nodes_admatrix[i2][i1] = adjacency_list_sorted[(p1, p2)]
 
+                         if adjacency_list_sorted[(p1, p2)] > edge_max_weight:
+                              edge_max_weight = adjacency_list_sorted[(p1, p2)]
+
+     edge_max_weight = edge_max_weight + 1
+
+     # 2-d array, contains distances (edge weights) between points. all 0 on diagonal (no edges connect node itself)
+     # [[0, 1.4142135623730951], [1.4142135623730951, 0]]
+     # print(odd_nodes_admatrix)
+     
+     G = nx.Graph()
+
+     G.add_nodes_from(range(ston_len))
+     # list of weighted edges, [(point0_index, point1_index, weight)]
+     weighted_edges = []
+
+     for i in range(ston_len):
+          for j in range(i+1, ston_len):
+               weighted_edges.append((i, j, edge_max_weight - odd_nodes_admatrix[i][j]))
+
+     # print(weighted_edges)
+
+     G.add_weighted_edges_from(weighted_edges)
+
+     perfect_matching = nx.algorithms.matching.max_weight_matching(G, maxcardinality=True)
 
      # print('odd_nodes_admatrix', odd_nodes_admatrix)
      # calculate a perfect mathing with the nodes of odd degree in spanning tree
-     perfect_matching = find_minimum_weight_matching(odd_nodes_admatrix)
+     # perfect_matching = find_minimum_weight_matching(odd_nodes_admatrix)
+
+
+# todo, review from here
      perfect_matching_points = []
      # find_minimum_weight_matching return a list of index of points, 
      # here we convert index back to points
-     for edge in perfect_matching:
+     for edge in list(perfect_matching):
           p1 = spanning_tree_odd_nodes[edge[0]]
           p2 = spanning_tree_odd_nodes[edge[1]]
           if p1[0] < p2[0] or (p1[0] == p2[0] and p1[1] < p2[1]):
                perfect_matching_points.append((p1, p2))
           else:
                perfect_matching_points.append((p2, p1))
+
+     # print(perfect_matching_points)
+
+     # return perfect_matching_points
 
      # print('perfect_matching', perfect_matching_points)
      # compute the union of perfect matching and spanning tree
@@ -285,6 +336,6 @@ def tsp(points):
 
      # make it a cycle
      hamiltonian_cycle.append(hamiltonian_cycle[0])
-     # print('hamiltonian_cycle', hamiltonian_cycle)
+     print('hamiltonian_cycle', hamiltonian_cycle)
      
      return hamiltonian_cycle
