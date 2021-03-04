@@ -330,10 +330,3 @@ def tsp(points):
      # print('hamiltonian_cycle', hamiltonian_cycle)
      
      return hamiltonian_cycle
-
-def main(input):
-    output = solve_tsp(input)
-    return output
-
-if __name__ == '__main__':
-    main(input)
