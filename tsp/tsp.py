@@ -310,7 +310,7 @@ def tsp(points):
 
      # `union_spanning_tree_matching` is a list of tuple,
      # tuples are two points index, represent an edge
-     # print('union_spanning_tree_matching', union_spanning_tree_matching)
+     print('union_spanning_tree_matching', union_spanning_tree_matching)
 
      # compute a eulerian cycle on the union, there must be one, since all nodes have even degree
      eulerian_cycle = hierholzer(union_spanning_tree_matching)
