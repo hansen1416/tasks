@@ -1,4 +1,5 @@
 import math
+import random
 import networkx as nx
 
 def distance(p, q):
@@ -80,11 +81,16 @@ def tsp(points):
 
     n = points[0]
 
-    for i in range(1, n+1):
-        for j in range(i+1, n+1):
-            if i != j:
+    li = list(range(1, n+1))
+    random.shuffle(li)
+
+    for i in li:
+        for j in li:
+            if i < j:
                 G.add_edge(i, j, weight=distance(points[i], points[j]))
                 # print(i, j, distance(points[i], points[j]))
+
+    del li
 
     mst = nx.minimum_spanning_tree(G)
     sub_nodes = []
@@ -94,7 +100,11 @@ def tsp(points):
             sub_nodes.append(d[0])
         # print(d[0], d[1])
 
+    # random.shuffle(sub_nodes)
+
     odd_node_sub = G.subgraph(sub_nodes)
+
+    del sub_nodes
     # print(odd_node_sub.edges(data=True))
     # print("=======")
 
@@ -110,6 +120,8 @@ def tsp(points):
     mpm = nx.algorithms.matching.max_weight_matching(odd_node_sub_rev, maxcardinality=False)
 
     union = list(mst.edges()) + list(mpm)
+
+    del mst, odd_node_sub, odd_node_sub_rev
 
     # print(mpm)
 
@@ -130,6 +142,16 @@ def tsp(points):
     # print('hamiltonian_cycle', hamiltonian_cycle)
 
     return hamiltonian_cycle
+
+    # tw = 0
+
+    # for i in range(1, n):
+    #     info = G.get_edge_data(hamiltonian_cycle[i], hamiltonian_cycle[i+1])
+    #     tw += info['weight']
+
+    # # print(tw)
+
+    # return tw, hamiltonian_cycle
 
 if __name__ == "__main__":
 
