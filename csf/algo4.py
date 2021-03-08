@@ -54,11 +54,11 @@ def remove_edge_from_matchedMST(MatchedMST, v1, v2):
 
     return MatchedMST
 
-def cost_change(G, n1, n2, n3, n4):
+def cost_change_nx(G, n1, n2, n3, n4):
     return G.get_edge_data(n1, n3)['weight'] + G.get_edge_data(n2, n4)['weight'] - \
         G.get_edge_data(n1, n2)['weight'] - G.get_edge_data(n3, n4)['weight']
 
-def two_opt(route, G):
+def two_opt_nx(route, G):
     best = route
     improved = True
     while improved:
@@ -67,14 +67,14 @@ def two_opt(route, G):
             for j in range(i + 1, len(route)):
 
                 if j - i == 1: continue
-                if cost_change(G, best[i - 1], best[i], best[j - 1], best[j]) < -1:
+                if cost_change_nx(G, best[i - 1], best[i], best[j - 1], best[j]) < -1:
                     best[i:j] = best[j - 1:i - 1:-1]
                     improved = True
 
         route = best
     return best
 
-def tsp(points):
+def tsp_nx(points):
     G = nx.Graph()
 
     n = points[0]
@@ -141,6 +141,6 @@ def tsp(points):
     hamiltonian_cycle.append(hamiltonian_cycle[0])
     # print('hamiltonian_cycle', hamiltonian_cycle)
 
-    result = two_opt(hamiltonian_cycle, G)
+    result = two_opt_nx(hamiltonian_cycle, G)
 
     return result

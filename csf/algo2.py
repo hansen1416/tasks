@@ -1,7 +1,23 @@
 import math
 import random
+import networkx as nx
 
 def tsp(data):
+
+    if data[0] <= 100:
+
+        min_tw = float('inf')
+        min_path = []
+        
+        for i in range(3):
+            tw, path = tsp_nx(data)
+
+            if tw < min_tw:
+                min_tw = tw
+                min_path = path
+
+        return min_path
+
     # build a graph
     G = build_graph(data[0], data)
     # print("Graph: ", G)
@@ -169,7 +185,7 @@ def minimum_weight_matching(MST, G, odd_vert):
         odd_vert.remove(closest)
 
 
-def find_eulerian_tour(MatchedMSTree, G):
+def find_eulerian_tour(MatchedMSTree):
     # print('MatchedMSTree', MatchedMSTree)
     # find neigbours
     neighbours = {}
@@ -217,3 +233,102 @@ def remove_edge_from_matchedMST(MatchedMST, v1, v2):
             del MatchedMST[i]
 
     return MatchedMST
+
+def cost_change_nx(G, n1, n2, n3, n4):
+    return G.get_edge_data(n1, n3)['weight'] + G.get_edge_data(n2, n4)['weight'] - \
+        G.get_edge_data(n1, n2)['weight'] - G.get_edge_data(n3, n4)['weight']
+
+def two_opt_nx(route, G):
+    best = route
+    improved = True
+    while improved:
+        improved = False
+        for i in range(1, len(route) - 2):
+            for j in range(i + 1, len(route)):
+
+                if j - i == 1: continue
+                if cost_change_nx(G, best[i - 1], best[i], best[j - 1], best[j]) < -1:
+                    best[i:j] = best[j - 1:i - 1:-1]
+                    improved = True
+
+        route = best
+    return best
+
+def tsp_nx(points):
+    G = nx.Graph()
+
+    n = points[0]
+
+    li = list(range(1, n+1))
+    random.shuffle(li)
+
+    for i in li:
+        for j in li:
+            if i < j:
+                G.add_edge(i, j, weight=get_distance(points[i][0], points[i][1], points[j][0], points[j][1]))
+                    # print(i, j, distance(points[i], points[j]))
+
+    del li
+
+    mst = nx.minimum_spanning_tree(G)
+    sub_nodes = []
+
+    for d in mst.degree:
+        if d[1] % 2 == 1:
+            sub_nodes.append(d[0])
+        # print(d[0], d[1])
+
+    # random.shuffle(sub_nodes)
+
+    odd_node_sub = G.subgraph(sub_nodes)
+
+    del sub_nodes
+    # print(odd_node_sub.edges(data=True))
+    # print("=======")
+
+    odd_node_sub_rev = nx.Graph()
+    max_w = 99999999999
+
+    for edge in list(odd_node_sub.edges(data=True)):
+        # G.add_edge(i, j, weight=distance(points[i], points[j]))
+        odd_node_sub_rev.add_edge(edge[0], edge[1], weight=(max_w - edge[2]['weight']))
+
+    # print(odd_node_sub_rev.edges(data=True))
+
+    mpm = nx.algorithms.matching.max_weight_matching(odd_node_sub_rev, maxcardinality=True)
+
+    union = list(mst.edges()) + list(mpm)
+
+    del mst, odd_node_sub, odd_node_sub_rev
+
+    # print(union)
+
+    # eulerian_cycle = hierholzer(union[:])
+
+    eulerian_cycle = find_eulerian_tour(union)
+
+    # print(eulerian_cycle)
+
+    start_index = eulerian_cycle.index(1)
+
+    hamiltonian_cycle = []
+    # remove repeated nodes, we start from node 1
+    for node in eulerian_cycle[start_index:] + eulerian_cycle[:start_index]:
+        if node not in hamiltonian_cycle:
+            hamiltonian_cycle.append(node)
+
+    # make it a cycle
+    hamiltonian_cycle.append(hamiltonian_cycle[0])
+    # print('hamiltonian_cycle', hamiltonian_cycle)
+
+    result = two_opt_nx(hamiltonian_cycle, G)
+
+    tw = 0
+
+    for i in range(0, n):
+        tw += G.get_edge_data(result[i], result[i+1])['weight']
+        # print(result[i], result[i+1], G.get_edge_data(result[i], result[i+1])['weight'])
+
+    # print(result)
+
+    return tw, result
