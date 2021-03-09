@@ -10,36 +10,42 @@ def tsp(data):
     G = build_graph(data[0], data)
     # print("Graph: ", G)
 
-    s1 = time.time()
-    print('build graph', s1-s0)
+    if (data[0] > 2000):
+        path = list(range(1, data[0]+1))
+        path.append(path[0])
+
+        return two_opt(path, G, limit_time=True, start_time = s0)
+
+    # s1 = time.time()
+    # print('build graph', s1-s0)
 
     # build a minimum spanning tree
     MSTree = minimum_spanning_tree(G)
     # print("MSTree: ", MSTree)
 
-    s2 = time.time()
-    print('mst', s2-s1)
+    # s2 = time.time()
+    # print('mst', s2-s1)
 
     # find odd vertexes
     odd_vertexes = find_odd_vertexes(MSTree)
     # print("Odd vertexes in MSTree: ", odd_vertexes)
 
-    s3 = time.time()
-    print('odd vertices', s3-s2)
+    # s3 = time.time()
+    # print('odd vertices', s3-s2)
 
     # add minimum weight matching edges to MST
     minimum_weight_matching(MSTree, G, odd_vertexes)
     # print("Minimum weight matching: ", MSTree)
 
-    s4 = time.time()
-    print('mwm', s4-s3)
+    # s4 = time.time()
+    # print('mwm', s4-s3)
 
     # find an eulerian tour
     eulerian_tour = find_eulerian_tour(MSTree)
     # print("Eulerian tour: ", eulerian_tour)
 
-    s5 = time.time()
-    print('et', s5-s4)
+    # s5 = time.time()
+    # print('et', s5-s4)
 
     start_i = eulerian_tour.index(1)
     path = []
@@ -58,13 +64,13 @@ def tsp(data):
 
     path.append(path[0])
 
-    s6 = time.time()
-    print('build path', s6-s5)
+    # s6 = time.time()
+    # print('build path', s6-s5)
 
     best = two_opt(path, G)
 
-    s7 = time.time()
-    print('2 opt', s7-s6)
+    # s7 = time.time()
+    # print('2 opt', s7-s6)
 
     # print(path, best)
     # print("Result path: ", path)
@@ -74,7 +80,7 @@ def tsp(data):
 def cost_change(G, n1, n2, n3, n4):
     return G[n1][n3] + G[n2][n4] - G[n1][n2] - G[n3][n4]
 
-def two_opt(route, G):
+def two_opt(route, G, limit_time=False, start_time=0):
     best = route
     improved = True
     while improved:
@@ -88,6 +94,12 @@ def two_opt(route, G):
                     improved = True
 
         route = best
+
+        if limit_time:
+            spent = time.time()
+            if spent - start_time > 28:
+                break
+
     return best
 
 def get_distance(x1, y1, x2, y2):
