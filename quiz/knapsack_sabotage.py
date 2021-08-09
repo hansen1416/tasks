@@ -1,3 +1,6 @@
+from typing import List, Tuple
+
+
 def get_max_value_greedy(value_weight_pairs, weight_limit):
     sum_ws = 0
     sum_vs = 0
@@ -12,7 +15,6 @@ def solve(
     n: int,
     weight_limit: float
 ) -> 'List[Tuple[float, float]]':
-
     """
     produce a set of items where the greedy approach will fail to achieve the maximal value.
     """
@@ -30,7 +32,7 @@ def solve(
         n -= 1
 
     return value_weight_pairs
-    
+
 
 if __name__ == "__main__":
 
