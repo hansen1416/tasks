@@ -211,16 +211,20 @@ if __name__ == "__main__":
     # main(input)
 
     array = [10, 2, 3, 4, 5]
-    # array = [10, 2, 3, 10, 5, 7, 8, 9, 10]
+    array = [2, 4, 8, 10, 2, 4, 5, 6, 9, 7]
 
-    queries = [('get_sum', 0, 2), ('update', 3, 10), ('get_sum', 2, 5)]
-    queries = [('get_sum', 2, 8)]
-    queries = [('multiply_range', 3, 5, 10)]
-    queries = [('get_sum', 0, 2), ('multiply_range', 3, 5, 10),
-               ('update', 3, 10), ('get_sum', 2, 5)]
-    queries = [('get_variance', 0, 2), ('multiply_range', 3, 5, 10),
-               ('update', 3, 10), ('get_variance', 2, 5)]
+    seg = SegmentTree(array)
 
-    res = perform_queries(array, queries)
+    print(seg.tree, len(seg.tree))
 
-    print(res)
+    # queries = [('get_sum', 0, 2), ('update', 3, 10), ('get_sum', 2, 5)]
+    # queries = [('get_sum', 2, 8)]
+    # queries = [('multiply_range', 3, 5, 10)]
+    # queries = [('get_sum', 0, 2), ('multiply_range', 3, 5, 10),
+    #            ('update', 3, 10), ('get_sum', 2, 5)]
+    # queries = [('get_variance', 0, 2), ('multiply_range', 3, 5, 10),
+    #            ('update', 3, 10), ('get_variance', 2, 5)]
+
+    # res = perform_queries(array, queries)
+
+    # print(res)

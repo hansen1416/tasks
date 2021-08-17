@@ -1,3 +1,6 @@
+from typing import List, Tuple
+
+
 def solve(
     bricks: 'List[Tuple[float, float, float]]',
     values: 'List[float]',
@@ -8,9 +11,9 @@ def solve(
 
     val_por = sorted(
         range(len(values)),
-        key = lambda i_ : brick_vols[i_] / values[i_],
+        key=lambda i_: brick_vols[i_] / values[i_],
     )
-    
+
     indx = 0
     ps = []
     sum_val = 0.0
@@ -32,13 +35,13 @@ def solve(
 
         indx += 1
 
-    return sum_val, ps
+    return sum_val  # , ps
 
 
 if __name__ == "__main__":
     bricks = [(1, 2, 3), (2, 3, 2)]
     values = [10, 15]
-    weight_limit = 7.5 
+    weight_limit = 7.5
     density = 2.5
 
     res = solve(bricks, values, weight_limit, density)
