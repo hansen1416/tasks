@@ -84,7 +84,7 @@ def solve(
 
         prev_word = all_words[p]
 
-    return score, path[::-1]
+    return score #, path[::-1]
 
 
 if __name__ == "__main__":
