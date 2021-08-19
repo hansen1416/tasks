@@ -19,6 +19,9 @@ def solve(
     sum_val = 0.0
 
     while weight_limit > 0:
+        
+        if indx >= len(val_por):
+            return int(sum_val)
 
         pointer = val_por[indx]
 
@@ -39,11 +42,23 @@ def solve(
 
 
 if __name__ == "__main__":
-    bricks = [(1, 2, 3), (2, 3, 2)]
-    values = [10, 15]
-    weight_limit = 7.5
-    density = 2.5
+
+    # bricks = [(1, 2, 3), (2, 3, 2)]
+    # values = [10, 15]
+    # weight_limit = 7.5
+    # density = 2.5
+
+    # res = solve(bricks, values, weight_limit, density)
+
+    # print(res)
+
+    bricks = [[2, 24, 86]]
+    values = [662]
+    weight_limit = 74503
+    density = 0.3
 
     res = solve(bricks, values, weight_limit, density)
 
     print(res)
+
+    # 'bricks': [[2, 24, 86]], 'values': [662], 'weight_limit': 74503, 'density': 1.3}
