@@ -38,9 +38,30 @@ def solve(
             end_time = time.time()
 
             if end_time - start_time >= 9.9:
-                return K[i][w]
+                # return K[i][w]
+                return []
 
-    return K[n][weight_limit]
+    res = K[i][w]
+
+    res_list = []
+
+    w = weight_limit
+    for i in range(n, 0, -1):
+        if res <= 0:
+            break
+
+        if res == K[i - 1][w]:
+            continue
+        else:
+            # print(weights[i - 1])
+
+            res_list.append(i - 1)
+
+            res = res - values[i - 1]
+            w = w - weights[i - 1]
+
+    # return K[n][weight_limit]
+    return res_list
 
 
 if __name__ == "__main__":
@@ -52,18 +73,18 @@ if __name__ == "__main__":
 
     # print(res)
 
-    # values = [60, 100, 120]
-    # weights = [10, 20, 30]
-    # weight_limit = 50
-
-    # res = solve(values, weights, weight_limit)
-
-    # print(res)
-
-    values = list(range(1, 10000))
-    weights = list(range(1, 10000))
-    weight_limit = 6000
+    values = [60, 100, 120]
+    weights = [10, 20, 30]
+    weight_limit = 50
 
     res = solve(values, weights, weight_limit)
 
     print(res)
+
+    # values = list(range(1, 10000))
+    # weights = list(range(1, 10000))
+    # weight_limit = 6000
+
+    # res = solve(values, weights, weight_limit)
+
+    # print(res)
