@@ -78,17 +78,17 @@ def solveKTUtil(num_rows, num_cols, board, curr_x, curr_y, move_x, move_y, pos, 
 
 
 if __name__ == "__main__":
-    num_rows = 8
-    num_cols = 8
-    start_row = 0
-    start_col = 0
+    # num_rows = 8
+    # num_cols = 8
+    # start_row = 0
+    # start_col = 0
 
-    res = solve(num_rows, num_cols, start_row, start_col)
+    # res = solve(num_rows, num_cols, start_row, start_col)
 
-    print(res)
+    # print(res)
 
-    num_rows = 3
-    num_cols = 3
+    num_rows = 50
+    num_cols = 50
     start_row = 0
     start_col = 0
 
